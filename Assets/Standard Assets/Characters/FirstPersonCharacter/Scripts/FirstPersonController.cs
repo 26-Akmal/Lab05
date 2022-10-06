@@ -47,6 +47,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public GameObject ScoreTxt;
         public float timer;
         public GameObject timerTxt;
+        public ParticleSystem coinExplosion;
 
         // Use this for initialization
         private void Start()
@@ -264,6 +265,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             Rigidbody body = hit.collider.attachedRigidbody;
             if (hit.gameObject.tag == "Coin")
             {
+                Instantiate(coinExplosion, hit.gameObject.transform.position, hit.gameObject.transform.rotation);
                 Destroy(hit.gameObject);
                 score += 10;
             }
@@ -284,17 +286,22 @@ namespace UnityStandardAssets.Characters.FirstPerson
             body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
            
         }
-       /* private void OnCollisionEnter(Collision collision)
-        {
-            if (collision.gameObject.tag == "Coin")
-            {
-                Destroy(collision.gameObject);
-                score += 10;
-            }
-            if (collision.gameObject.tag == "Water")
-            {
-                Destroy(gameObject);
-            }
-        }*/
+        
+        // Start is called before the first frame update
+      
+       
+
+        /* private void OnCollisionEnter(Collision collision)
+         {
+             if (collision.gameObject.tag == "Coin")
+             {
+                 Destroy(collision.gameObject);
+                 score += 10;
+             }
+             if (collision.gameObject.tag == "Water")
+             {
+                 Destroy(gameObject);
+             }
+         }*/
     }
 }
