@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityStandardAssets.Utility;
 using Random = UnityEngine.Random;
-
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 namespace UnityStandardAssets.Characters.FirstPerson
 {
     [RequireComponent(typeof (CharacterController))]
@@ -42,6 +43,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+        public float score;
+        public GameObject ScoreTxt;
+        public float timer;
+        public GameObject timerTxt;
+
         // Use this for initialization
         private void Start()
         {
@@ -61,6 +67,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Update is called once per frame
         private void Update()
         {
+            timer -= Time.deltaTime;
             RotateView();
             // the jump state needs to read here to make sure it is not missed
             if (!m_Jump)
@@ -81,6 +88,18 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
+
+            ScoreTxt.GetComponent<Text>().text = "Score: " + score;
+            timerTxt.GetComponent<Text>().text = "Time: " + Mathf.Round(timer *100)/100;
+            if (timer <= 0)
+            {
+                SceneManager.LoadScene("GameLose");
+            }
+            if (score >= 60)
+            {
+                SceneManager.LoadScene("GameWin");
+            }
+
         }
 
 
@@ -243,6 +262,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {
             Rigidbody body = hit.collider.attachedRigidbody;
+            if (hit.gameObject.tag == "Coin")
+            {
+                Destroy(hit.gameObject);
+                score += 10;
+            }
+            if (hit.gameObject.tag == "Water")
+            {
+                SceneManager.LoadScene("GameLose");
+            }
             //dont move the rigidbody if the character is on top of it
             if (m_CollisionFlags == CollisionFlags.Below)
             {
@@ -254,6 +282,19 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 return;
             }
             body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
+           
         }
+       /* private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.gameObject.tag == "Coin")
+            {
+                Destroy(collision.gameObject);
+                score += 10;
+            }
+            if (collision.gameObject.tag == "Water")
+            {
+                Destroy(gameObject);
+            }
+        }*/
     }
 }
